@@ -2,13 +2,17 @@
 
 namespace OpenCloud;
 
+// Author: Chris Parsons
+// This program creates 3 identical servers with the same base name.  If you set $SERVERNAME to "DB", this program will
+// create DB1, DB2, and DB3 cloud servers.  OS and Memory values can be set well.
+
 //include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));
 
 //set the requested OS and memory for the new Cloud Server
 $OS = 'CentOS 6.3';
 $MEMORY = 512;
-$SERVERNAME = "web"; //this program will create $SERVERNAME1, $SERVERNAME2, and $SERVERNAME3
+$SERVERNAME = "web";
 
 //include the rackspace library
 require('rackspace.php');
@@ -51,15 +55,7 @@ for($a = 1; $a <=3; $a++)
     $newserver -> Create($serverinfo);
     print("Building your $OS server named ".$newserver -> name."...\n");
     $newserver->WaitFor("ACTIVE", 600);
-    print($newserver -> name." build is complete.\n");
-    
+    print($newserver -> name." build is complete.\n");    
 }
-//$newserver -> name = "web";
-//$newserver -> name = $newserver -> name .= strval(1);
-//$newserver -> Create($serverinfo);
-//print("Building your $OS server...\n");
-//print($newserver -> name);
-//$newserver->WaitFor("ACTIVE", 600);
-//print("Server build is complete.\n");
-exit(0);
 
+exit(0);
