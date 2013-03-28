@@ -1,4 +1,4 @@
 krispyapi
 =========
 
-Krispy's API Challenge: Java Edition
+Krispy's API Challenge: PHP Edition
