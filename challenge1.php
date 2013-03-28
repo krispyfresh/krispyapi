@@ -28,11 +28,12 @@ $ini = parse_ini_file(".rackspace_cloud_credentials", TRUE);
 $auth = array('username' => $ini['authentication']['username'],
               'apiKey' => $ini['authentication']['apikey']);
 $rsconnect = new Rackspace(RACKSPACE_US, $auth);
+
+//create a handle to Cloud Servers
 $cloudservers = $rsconnect -> Compute('cloudServersOpenStack', 'DFW');
 
 //go through the list of flavors to find the right one
 $flavorlist = $cloudservers -> FlavorList();
-//$flavorlist -> Sort('id');
 while($f = $flavorlist -> Next())
 {
     if($f -> ram == $MEMORY)
@@ -41,7 +42,6 @@ while($f = $flavorlist -> Next())
 
 //go through the list of images to find the right one
 $imagelist = $cloudservers -> ImageList();
-//$imagelist -> Sort('name');
 while($i = $imagelist -> Next())
 {
     if($i -> name == $OS)
