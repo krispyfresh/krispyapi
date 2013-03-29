@@ -3,8 +3,8 @@
 namespace OpenCloud;
 
 // Author: Chris Parsons
-// This program creates a clone of $SERVERNAME and names it $SERVERNAME_CLONE.  It will create an image file
-// named $SERVERNAME.$IMAGEDESC
+// This program creates a clone of $SERVERNAME and names it $SERVERNAME_CLONE.
+// It will create an image file named $SERVERNAME.$IMAGEDESC
 
 //include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));
@@ -30,16 +30,21 @@ $rsconnect = new Rackspace(RACKSPACE_US, $auth);
 //create a handle to Cloud Servers
 $cloudservers = $rsconnect -> Compute('cloudServersOpenStack', 'DFW');
 
+//cycle through your server and look for $SERVERNAME
+//a handle to the server is stored as $server
 $serverlist = $cloudservers -> ServerList();
 while($s = $serverlist -> Next())
     if($s -> name == $SERVERNAME)
         $server = $s;
         
+//create image $SERVERNAME.$IMAGEDESC, and wait for it to finish
 $server -> CreateImage($SERVERNAME.$IMAGEDESC);
-$server -> WaitFor("COMPLETE", 600);
+print("Creating an image of $SERVERNAME called ".$SERVERNAME.$IMAGEDESC."...\n");
+$server -> WaitFor("COMPLETE", 300);  //COMPLETE is not a valid status, so this will wait for 5 minutes
+print("DONE!\n");
 
-print($image->name."\n");
-
+//cycle through your images and look for the image we just created
+//a handle to the server is stored as $image
 $imagelist = $cloudservers -> ImageList();
 while($i = $imagelist -> Next())
 {
@@ -47,11 +52,13 @@ while($i = $imagelist -> Next())
         $image = $i;
 }
 
-
+//create a new server from the image we created
 $newserver = $cloudservers -> Server();
 $newserver -> Create(array('name' => $server -> name."_CLONE",
                            'image' => $image,
                            'flavor' => $server -> flavor));
-
+print("Creating server ".$server -> name."_CLONE\n");
+$newserver -> WaitFor("ACTIVE");
+print("DONE!\n");
 
 ?>

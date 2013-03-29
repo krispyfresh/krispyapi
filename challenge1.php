@@ -61,4 +61,4 @@ for($a = 1; $a <=3; $a++)
     print("Building your $OS server named ".$newserver -> name."...\n");  
 }
 
-exit(0);
+?>
