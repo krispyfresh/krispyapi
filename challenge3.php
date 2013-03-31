@@ -13,6 +13,12 @@ $CONTAINER = $argv[2]; //Upload files to this Cloud Files container
 //include the rackspace library
 require('rackspace.php');
 
+function UploadProgress($len)
+{
+    printf("[uploading %d bytes]", $len);
+}
+
+
 //read the ini file and store it in $ini as an array
 //ini file is at .rackspace_cloud_credentials and contains:
 //[authentication]
@@ -27,6 +33,7 @@ $rsconnect = new Rackspace(RACKSPACE_US, $auth);
 
 //create a handle to Cloud Files
 $cloudfiles = $rsconnect -> ObjectStore('cloudFiles', 'DFW');
+$rsconnect->SetUploadProgressCallback('OpenCloud\UploadProgress');
 
 //check to see if the container exists
 $containerlist = $cloudfiles -> ContainerList();
@@ -42,7 +49,7 @@ while($c = $containerlist -> Next())
     }
 }
 
-//if the container doesn't exist, create it
+//if the container doesn't exist, create it, and save a handle to it
 if($containerfound == false)
 {
     $container = $cloudfiles -> Container();
@@ -50,22 +57,18 @@ if($containerfound == false)
     print("Created container $CONTAINER\n");
 }
 
-
+//create a handle to the directory
 $dir = opendir($DIRECTORY);
-$file = readdir($dir);
 while($file = readdir($dir))
 {
     if(!($file === ".") && !($file === ".."))
     {
         print("Uploading $file to Cloud Files container $CONTAINER ");
         $newobject = $container -> DataObject();
-        $newobject -> Create(array('name' => $file),__FILE__);
-        print("of size ".$newobject -> size."\n");
+        //sleep(2);
+        $newobject -> Create(array('name' => $file,
+                                   'content_type' => 'text/plain'),__FILE__);
     }
 }
-
-
-
-
 
 ?>
