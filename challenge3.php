@@ -3,6 +3,8 @@
 namespace OpenCloud;
 
 // Author: Chris Parsons
+// uploads a folder to cloud files
+// takes two arguments, the folder and the cloud files container
 
 //include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));
