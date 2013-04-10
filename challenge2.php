@@ -9,6 +9,21 @@ namespace OpenCloud;
 // include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));
 
+// check that we have the right number of arguments
+if(sizeof($argv) != 2)
+{
+    print("Incorrect number of arguments!\n");
+    print("Usage: challenge2.php <servername_to_clone>\n");
+    exit();
+}
+
+// chekc that the given server name contains only numbers and letters
+if(!ctype_alnum($argv[1]))
+{
+    print("Cannot create cloud server whose name has non-alphanumeric characters.\n");
+    exit();
+}
+
 $SERVERNAME = $argv[1];  // this is the name of the Cloud Server you want to clone
 $IMAGEDESC = '_IMAGE'; // images are named $SERVERNAME.$IMAGEDESC
 $DC = 'DFW'; // the DC we will work in
