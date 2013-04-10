@@ -43,9 +43,9 @@ for($a = 1; $a <=3; $a++)
     $newserver = $cloudservers -> Server(); // initialize a new Server object
     $newserver -> name = $SERVERNAME.(string)$a; // appends the incremental number to the end of $SERVERNAME
     $newserver -> Create($serverinfo); // create the new server
-    $rootpassword = $newserver -> adminPass; // save the root password for the server
+    $rootpassword = $newserver -> adminPass; // root password is only returned when the server is created, so save it
     print("Building your new server ".$newserver -> name."...\n");
-    while(!($newserver -> status == 'ACTIVE'))
+    while($newserver -> status != 'ACTIVE')
     {
         $newserver = $cloudservers -> Server($newserver -> id);  // refresh the server info so we can check the current status
         sleep(15);
