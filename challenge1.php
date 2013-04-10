@@ -4,61 +4,53 @@ namespace OpenCloud;
 
 // Author: Chris Parsons
 // This program creates 3 identical servers with the same base name.  If you set $SERVERNAME to "DB", this program will
-// create DB1, DB2, and DB3 cloud servers.  OS and Memory values can be set well.
+// create DB1, DB2, and DB3 cloud servers.  Image and flavor can be changed but will be the same for all 3 servers.
 
-//include the lib directory in the working path
+// include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));
 
-//set the requested OS and memory for the new Cloud Server
-$OS = 'CentOS 6.3';
-$MEMORY = 512;
-$SERVERNAME = "db";
+// set the requested OS and memory for the new Cloud Server
+$IMAGE_ID = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'; // CentOS 6.3
+$FLAVOR_ID = 2; // 512 MB slice
+$SERVERNAME = 'web'; // if $SERVERNAME is 'web', this program will create WEB1, WEB2, and WEB3
+$DC = 'DFW'; // the DC to create the servers in
 
-//include the rackspace library
+// include the rackspace library
 require('rackspace.php');
 
-//read the ini file and store it in $ini as an array
-//ini file is at .rackspace_cloud_credentials and contains:
-//[authentication]
-//username: $your_username
-//apikey: $your_apikey
+// read the ini file and store it in $ini as an array
+// ini file is at .rackspace_cloud_credentials and contains:
+// [authentication]
+// username: $your_username
+// apikey: $your_apikey
 $ini = parse_ini_file(".rackspace_cloud_credentials", TRUE);
 
-//get an auth token by passing the username and api key to the auth server
+// get an auth token by passing the username and api key to the auth server
 $auth = array('username' => $ini['authentication']['username'],
               'apiKey' => $ini['authentication']['apikey']);
 $rsconnect = new Rackspace(RACKSPACE_US, $auth);
 
-//create a handle to Cloud Servers
-$cloudservers = $rsconnect -> Compute('cloudServersOpenStack', 'DFW');
+// create a handle to Cloud Servers
+$cloudservers = $rsconnect -> Compute('cloudServersOpenStack', $DC);
 
-//go through the list of flavors to find the right one
-$flavorlist = $cloudservers -> FlavorList();
-while($f = $flavorlist -> Next())
-{
-    if($f -> ram == $MEMORY)
-        $RS_FLAVOR = $f;
-}
+// set the cloud server properties
+$serverinfo = array('image' => $cloudservers -> Image($IMAGE_ID),
+                    'flavor' => $cloudservers -> Flavor($FLAVOR_ID));
 
-//go through the list of images to find the right one
-$imagelist = $cloudservers -> ImageList();
-while($i = $imagelist -> Next())
-{
-    if($i -> name == $OS)
-        $RS_IMAGE = $i;
-}
-
-//set the cloud server properties
-$serverinfo = array('image' => $RS_IMAGE,
-                    'flavor' => $RS_FLAVOR);
-$newserver = $cloudservers -> Server();
-
-//create each cloud server
+// create each cloud server
 for($a = 1; $a <=3; $a++)
 {
-    $newserver -> name = $SERVERNAME . (string)$a;  //appends the incremental number to the end of $SERVERNAME
-    $newserver -> Create($serverinfo);
-    print("Building your $OS server named ".$newserver -> name."...\n");  
+    $newserver = $cloudservers -> Server(); // initialize a new Server object
+    $newserver -> name = $SERVERNAME.(string)$a; // appends the incremental number to the end of $SERVERNAME
+    $newserver -> Create($serverinfo); // create the new server
+    $rootpassword = $newserver -> adminPass; // save the root password for the server
+    print("Building your new server ".$newserver -> name."...\n");
+    while(!($newserver -> status == 'ACTIVE'))
+    {
+        $newserver = $cloudservers -> Server($newserver -> id);  // refresh the server info so we can check the current status
+        sleep(15);
+    }
+    print("Created server $SERVERNAME".$a." with IP ".$newserver -> ip(). " and root password ".$rootpassword."\n");  
 }
 
 ?>
