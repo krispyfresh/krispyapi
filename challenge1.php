@@ -3,8 +3,8 @@
 namespace OpenCloud;
 
 // Author: Chris Parsons
-// This program creates 3 identical servers with the same base name.  If you set $SERVERNAME to "DB", this program will
-// create DB1, DB2, and DB3 cloud servers.  Image and flavor can be changed but will be the same for all 3 servers.
+// This program creates 3 identical servers with the same base name. If you set $SERVERNAME to "DB", this program will
+// create DB1, DB2, and DB3 cloud servers. Image and flavor can be changed but will be the same for all 3 servers.
 
 // include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));
@@ -47,10 +47,10 @@ for($a = 1; $a <=3; $a++)
     print("Building your new server ".$newserver -> name."...\n");
     while($newserver -> status != 'ACTIVE')
     {
-        $newserver = $cloudservers -> Server($newserver -> id);  // refresh the server info so we can check the current status
+        $newserver = $cloudservers -> Server($newserver -> id); // refresh the server info so we can check the current status
         sleep(15);
     }
-    print("Created server $SERVERNAME".$a." with IP ".$newserver -> ip(). " and root password ".$rootpassword."\n");  
+    print("Created server $SERVERNAME".$a." with IP ".$newserver -> ip(). " and root password ".$rootpassword."\n");
 }
 
 ?>

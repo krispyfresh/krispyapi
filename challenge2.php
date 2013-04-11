@@ -17,7 +17,7 @@ if(sizeof($argv) != 2)
     exit();
 }
 
-// chekc that the given server name contains only numbers and letters
+// check that the given server name contains only numbers and letters
 if(!ctype_alnum($argv[1]))
 {
     print("Cannot create cloud server whose name has non-alphanumeric characters.\n");
