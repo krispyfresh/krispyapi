@@ -66,6 +66,7 @@ while($i = $imagelist -> Next())
     }
 }
 
+// did we find both the image and the flavor?
 if($imagefound && $flavorfound)
 {
     $server = $cloudservers -> Server();
@@ -100,9 +101,9 @@ if($imagefound && $flavorfound)
     print("Creating A record for $FQDN in DNS zone $domainname...\n");
 }
 
+// if flavor or image was incorrect, don't do anything
 else
-{
-    
+{ 
     if(!$imagefound)
         print("Image not found!\n");
     if(!$flavorfound)
