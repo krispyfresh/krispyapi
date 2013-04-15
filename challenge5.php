@@ -4,9 +4,6 @@ namespace OpenCloud;
 
 // Author: Chris Parsons
 // creates an instance, a database, and a user for that database
-// THIS SCRIPT DOES NOT WORK!!
-// there is a known bug in php-openclouds where the database -> Create()
-// calls a URL on localhost instead of the correct target
 
 //include the lib directory in the working path
 ini_set('include_path','./lib:'.ini_get(include_path));

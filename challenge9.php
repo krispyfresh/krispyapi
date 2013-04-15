@@ -25,14 +25,15 @@ if(sizeof($argv) != 4)
 $FQDN = $argv[1];
 $OS = $argv[2];
 $MEMORY = $argv[3];
-$EMAIL = "chris.parsons@rackspace.com"; //email to use for the new DNS zone
+$EMAIL = 'chris.parsons@rackspace.com'; //email to use for the new DNS zone
+$DC = 'DFW'; // which DC to put all this stuff in
 
 // read the ini file and store it in $ini as an array
 // ini file is at .rackspace_cloud_credentials and contains:
 // [authentication]
 // username: $your_username
 // apikey: $your_apikey
-$ini = parse_ini_file(".rackspace_cloud_credentials", TRUE);
+$ini = parse_ini_file('.rackspace_cloud_credentials', TRUE);
 
 // get an auth token by passing the username and api key to the auth server
 $auth = array('username' => $ini['authentication']['username'],
@@ -40,7 +41,7 @@ $auth = array('username' => $ini['authentication']['username'],
 $rsconnect = new Rackspace(RACKSPACE_US, $auth);
 
 // create a handle to Cloud Servers
-$cloudservers = $rsconnect -> Compute('cloudServersOpenStack', 'DFW');
+$cloudservers = $rsconnect -> Compute('cloudServersOpenStack', $DC);
 
 // go through the list of flavors to find the right one
 $flavorlist = $cloudservers -> FlavorList();
