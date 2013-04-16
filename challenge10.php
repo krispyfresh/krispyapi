@@ -46,15 +46,15 @@ $cloudservers = $rsconnect -> Compute('cloudServersOpenStack', $DC);
 print("Creating "."$SERVERPREFIX"."1 and $SERVERPREFIX"."2...\n");
 $server1 = $cloudservers -> Server();
 $server1 -> AddFile("/root/.ssh/authorized_keys",file_get_contents($LOCAL_SSH_KEY)); // upload your SSH key to the server
-$response = $server1 -> Create(array('name' => $SERVERPREFIX."1",
-                                     'image' => $cloudservers -> Image($IMAGE_ID),
-                                     'flavor' => $cloudservers -> Flavor($FLAVOR_ID)));
+$server1 -> Create(array('name' => $SERVERPREFIX."1",
+                         'image' => $cloudservers -> Image($IMAGE_ID),
+                         'flavor' => $cloudservers -> Flavor($FLAVOR_ID)));
 
 $server2 = $cloudservers -> Server();
 $server2 -> AddFile("/root/.ssh/authorized_keys",file_get_contents($LOCAL_SSH_KEY)); // upload your SSH key to the server
-$response = $server2 -> Create(array('name' => $SERVERPREFIX."2",
-                                     'image' => $cloudservers -> Image($IMAGE_ID),
-                                     'flavor' => $cloudservers -> Flavor($FLAVOR_ID)));
+$server2 -> Create(array('name' => $SERVERPREFIX."2",
+                         'image' => $cloudservers -> Image($IMAGE_ID),
+                         'flavor' => $cloudservers -> Flavor($FLAVOR_ID)));
 
 // wait for the build to complete
 while($server1 -> status != 'ACTIVE' && $server2 -> status != 'ACTIVE')
@@ -72,7 +72,7 @@ $serverips = $server2 -> ips();
 $privip2 = $serverips -> private[0] -> addr;
 
 // create a handle to Cloud Load Balancers
-$cloudlb = $rsconnect -> LoadBalancerService('cloudLoadBalancers','DFW');
+$cloudlb = $rsconnect -> LoadBalancerService('cloudLoadBalancers',$DC);
 
 print("Creating load balancer $LBNAME with nodes $privip1 and $privip2...\n");
 $loadbalancer = $cloudlb -> LoadBalancer();
