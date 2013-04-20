@@ -12,6 +12,8 @@ $IMAGE_ID = 'c195ef3b-9195-4474-b6f7-16e5bd86acd0'; // CentOS 6.3
 $FLAVOR_ID = 2; // 512 MB slice
 $CBS_SIZE = 100; // size of CBS volumes in GB - number must be between 100 and 1024
 $LBNAME = 'KrispyLB'; // name of LB to create
+$CERT = 'certificate.cer'; // path to public certificate in PEM format
+$PRIVATEKEY = 'private.key'; // path to private key in PEM format
 $DC = 'DFW'; // the DC to create the servers in
 
 // include the rackspace library
@@ -28,7 +30,7 @@ $ini = parse_ini_file(".rackspace_cloud_credentials", TRUE);
 $auth = array('username' => $ini['authentication']['username'],
               'apiKey' => $ini['authentication']['apikey']);
 $rsconnect = new Rackspace(RACKSPACE_US, $auth);
-
+/*
 $cloudservers = $rsconnect -> Compute('cloudServersOpenStack', $DC);
 
 $cloudnetwork = $cloudservers -> Network();
@@ -72,21 +74,24 @@ for($a = 1; $a <= 3; $a++)
 }
 
 print("Cloud Block Storage is attached!\n");
-
+*/
 // create the load balancer
 print("Creating load balancer $LBNAME...\n");
 $cloudlb = $rsconnect -> LoadBalancerService('cloudLoadBalancers',$DC);
 
 $loadbalancer = $cloudlb -> LoadBalancer();
-for($a = 1; $a <= 3; $a++)
+/*for($a = 1; $a <= 3; $a++)
 {
     $serverips = $servers[$a] -> ips();
     $privateip = $serverips -> private[0] -> addr;
     $loadbalancer -> AddNode($servers[$a] -> $privateip, 443);
 }
+*/
+$loadbalancer -> AddNode('1.1.1.1', 80);
+$loadbalancer -> AddVirtualIp('public');
 $loadbalancer -> Create(array('name' => $LBNAME,
-                                          'protocol' => 'HTTPS',
-                                          'port' => 443));
+                              'protocol' => 'HTTP',
+                              'port' => 443));
 
 // wait for the LB to come online
 while($loadbalancer -> status != 'ACTIVE')
@@ -95,9 +100,11 @@ while($loadbalancer -> status != 'ACTIVE')
     sleep(5);
 }
 
-$loadbalancer -> SSLTermination(array('certificate' => xyz,
-                                      'enabled' => true,
-                                      'privatekey' => abc));
+$ssl = $loadbalancer -> SSLTermination();
+$ssl -> Create(array('certificate' => $CERT,
+                     'enabled' => 'true',
+                     'privatekey' => $PRIVATEKEY));
+
 
 
 
